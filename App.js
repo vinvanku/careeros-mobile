@@ -6,8 +6,39 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
 import { COLORS, FONT_SIZES, SPACING, SHADOWS } from './src/constants/theme';
+
+// ─── Error Boundary for Web Debugging ─────────────────────────────────────────
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    this.setState({ errorInfo });
+    console.error('CareerOS Error:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40, backgroundColor: '#FEF2F2' }}>
+          <Text style={{ fontSize: 24, fontWeight: '800', color: '#EF4444', marginBottom: 12 }}>Something went wrong</Text>
+          <Text style={{ fontSize: 14, color: '#374151', textAlign: 'center', marginBottom: 8 }}>
+            {this.state.error?.toString()}
+          </Text>
+          <Text style={{ fontSize: 11, color: '#6B7280', textAlign: 'center' }}>
+            {this.state.errorInfo?.componentStack?.slice(0, 500)}
+          </Text>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Auth Screens
 import LoginScreen from './src/screens/auth/LoginScreen';
@@ -247,25 +278,27 @@ function MainTabs() {
 // ─── Root App ─────────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <StatusBar style="light" />
-          <Stack.Navigator
-            initialRouteName="Login"
-            screenOptions={{ headerShown: false }}
-          >
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Main" component={MainTabs} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="Prediction" component={PredictionScreen} />
-            <Stack.Screen name="Market" component={MarketScreen} />
-            <Stack.Screen name="Mentorship" component={MentorshipScreen} />
-            <Stack.Screen name="Wellness" component={WellnessScreen} />
-            <Stack.Screen name="Notifications" component={NotificationsScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <StatusBar style="light" />
+            <Stack.Navigator
+              initialRouteName="Login"
+              screenOptions={{ headerShown: false }}
+            >
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Main" component={MainTabs} />
+              <Stack.Screen name="Profile" component={ProfileScreen} />
+              <Stack.Screen name="Prediction" component={PredictionScreen} />
+              <Stack.Screen name="Market" component={MarketScreen} />
+              <Stack.Screen name="Mentorship" component={MentorshipScreen} />
+              <Stack.Screen name="Wellness" component={WellnessScreen} />
+              <Stack.Screen name="Notifications" component={NotificationsScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }
