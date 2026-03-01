@@ -4,8 +4,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { COLORS, FONT_SIZES, SPACING, SHADOWS } from './src/constants/theme';
 
 // Auth Screens
@@ -26,7 +27,6 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 // ─── Notifications Screen (inline) ───────────────────────────────────────────
-import { ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NOTIFICATIONS } from './src/constants/mockData';
 import Card from './src/components/common/Card';
@@ -78,7 +78,7 @@ const notifStyles = StyleSheet.create({
 // ─── Custom Tab Bar ───────────────────────────────────────────────────────────
 function CustomTabBar({ state, descriptors, navigation }) {
   const tabs = [
-    { name: 'Home', icon: 'home', activeIcon: 'home', label: 'Home' },
+    { name: 'Home', icon: 'home-outline', activeIcon: 'home', label: 'Home' },
     { name: 'Academics', icon: 'bar-chart-outline', activeIcon: 'bar-chart', label: 'Academic' },
     { name: 'Skills', icon: 'code-slash-outline', activeIcon: 'code-slash', label: 'Skills' },
     { name: 'Roadmap', icon: 'map-outline', activeIcon: 'map', label: 'Roadmap' },
@@ -198,8 +198,6 @@ function MoreScreen({ navigation }) {
             </TouchableOpacity>
           ))}
         </View>
-
-        {/* App Info */}
         <View style={moreStyles.infoCard}>
           <View style={moreStyles.infoLogo}>
             <Ionicons name="briefcase" size={24} color={COLORS.white} />
@@ -246,31 +244,28 @@ function MainTabs() {
   );
 }
 
-// ─── Root Stack Navigator ─────────────────────────────────────────────────────
+// ─── Root App ─────────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar style="light" />
-        <Stack.Navigator
-          initialRouteName="Login"
-          screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
-        >
-          {/* Auth */}
-          <Stack.Screen name="Login" component={LoginScreen} />
-
-          {/* Main App */}
-          <Stack.Screen name="Main" component={MainTabs} />
-
-          {/* Detail Screens (accessible from tabs & home) */}
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="Prediction" component={PredictionScreen} />
-          <Stack.Screen name="Market" component={MarketScreen} />
-          <Stack.Screen name="Mentorship" component={MentorshipScreen} />
-          <Stack.Screen name="Wellness" component={WellnessScreen} />
-          <Stack.Screen name="Notifications" component={NotificationsScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <StatusBar style="light" />
+          <Stack.Navigator
+            initialRouteName="Login"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen name="Prediction" component={PredictionScreen} />
+            <Stack.Screen name="Market" component={MarketScreen} />
+            <Stack.Screen name="Mentorship" component={MentorshipScreen} />
+            <Stack.Screen name="Wellness" component={WellnessScreen} />
+            <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
